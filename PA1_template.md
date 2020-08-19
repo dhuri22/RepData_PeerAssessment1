@@ -7,28 +7,33 @@ output:
 
 ## Loading and preprocessing the data
 1. Load the data into R
-```{r}
+
+```r
 activityData <- read.csv(file="activity.csv", header=TRUE)
 ```
 
 
 ## What is mean total number of steps taken per day?
-```{r}
+
+```r
 totalSteps <- aggregate(steps ~ date, activityData, FUN=sum)
 hist(totalSteps$steps,
      main = "Total Steps per Day",
      xlab = "Number of Steps")
-
 ```
 
-```{r}
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png)<!-- -->
+
+
+```r
 meanSteps <- mean(totalSteps$steps, na.rm = TRUE)
 medSteps <- median(totalSteps$steps, na.rm = TRUE)
 ```
 
 ## What is the average daily activity pattern?
 
-```{r}
+
+```r
 library(ggplot2)
 meanStepsByInt <- aggregate(steps ~ interval, activityData, mean)
 ggplot(data = meanStepsByInt, aes(x = interval, y = steps)) +
@@ -37,18 +42,26 @@ ggplot(data = meanStepsByInt, aes(x = interval, y = steps)) +
   xlab("5-minute Interval") +
   ylab("Average Number of Steps") +
   theme(plot.title = element_text(hjust = 0.5))
-
 ```
-```{r}
+
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
+
+```r
 maxInt <- meanStepsByInt[which.max(meanStepsByInt$steps),]
 ```
 
 ## Imputing missing values
-```{r}
+
+```r
 missingVals <- activityData[!complete.cases(activityData$steps),]
 nrow(missingVals)
 ```
-```{r}
+
+```
+## [1] 2304
+```
+
+```r
 imp_activityData <- transform(activityData,
                               steps = ifelse(is.na(activityData$steps),
                                              meanStepsByInt$steps[match(activityData$interval, 
@@ -62,8 +75,11 @@ hist(impStepsByInt$steps,
      xlab = "Number of Steps")
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
+
 ## Are there differences in activity patterns between weekdays and weekends?  
-```{r}
+
+```r
 DayType <- function(date) {
   day <- weekdays(date)
   if (day %in% c('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'))
@@ -85,3 +101,5 @@ ggplot(data = meanStepsByDay, aes(x = interval, y = steps)) +
   ylab("Average Number of Steps") +
   theme(plot.title = element_text(hjust = 0.5))
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
